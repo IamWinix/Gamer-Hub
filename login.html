@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GamerHub | Login </title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/replit-client@2.1.0/replitClient.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: #f5f5f5;
+        font-family: Arial, sans-serif;
+      }
+
+      main {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 40px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        margin-bottom: 20px;
+        color: #444;
+        text-align: center;
+      }
+
+      #logo {
+        display: block;
+        margin: 0 auto 30px;
+        width: 100%;
+        max-width: 200px;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      button[type="submit"] {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #fff;
+        background-color: #333;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+      }
+
+      button[type="submit"]:hover {
+        background-color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h2>Login to GamerHub</h2>
+
+      <img src="images/gamerhub.png" alt="Logo" id="logo">
+
+      <form action="/login" method="post">
+        <button type="submit">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/New_Replit_Logo.svg/1200px-New_Replit_Logo.svg.png" height="20px" width="20px"alt="Replit Icon">
+          Login using Replit
+        </button>
+      </form>
+    </main>
+
+    <script>
+      const client = new ReplitClient("api.repl.it", 80, "YOUR_API_KEY");
+
+      async function handleAuth() {
+        const searchParams = new URLSearchParams(window.location.search);
+        const code = searchParams.get("code");
+        const response = await axios.post("https://repl.it/oauth/token", {
+          client_id: "YOUR_CLIENT_ID",
+          client_secret: "YOUR_CLIENT_SECRET",
+          redirect_uri: "http://localhost:3000/login/auth",
+          grant_type: "authorization_code",
+          code,
+        });
+        const accessToken = response.data.access_token;
+        const user = await client.user.get(accessToken);
+        const username = user.username;
+        const pfpUrl = user.avatar;
+        const form = document.querySelector("form");
+        const usernameInput = document.createElement("input");
+        usernameInput.type = "hidden";
+        usernameInput.name = "username";
+        usernameInput.value = username;
+        const pfpUrlInput = document.createElement("input");
+        pfpUrlInput.type = "hidden";
+        pfpUrlInput.name = "pfpUrl";
+        pfpUrlInput.value = pfpUrl;
+        form.appendChild(usernameInput);
+        form.appendChild(pfpUrlInput);
+        form.submit();
+      }
+    </script>
+  </body>
+</html>
